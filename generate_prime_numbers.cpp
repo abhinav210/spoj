@@ -33,56 +33,60 @@
 #include <iostream>
 #include <string>
 #include <math.h>
+#include <vector>
 #include <map>
 #include <stdlib.h>
 using namespace std;
 
-#define MAX 100000
-#define SIZE_ARR MAX
-int LOWER = 0;
-char arr[SIZE_ARR] = {0,};
-void inline set_i(int i)    { arr[i-LOWER]=1; }
-bool inline if_prime_i(int i) { return (arr[i-LOWER] == 0); }
-void build_primes(int p, int q)
-{
-    for(int i = p; i <= q; i++)
-    {
-        if(if_prime_i(i))
-        {
-            for (int j = 2; j <=i/2; j++)
-            {
-                if (i%j == 0)
-                {
-                    set_i(i);
-                    for(int k = i; k <= q/i; k++)
-                    {
-                        set_i(i*k);
-                    }
-                    break;
-                }
-                //test division with only odd values
-                if (j != 2) {
-                    j++;
-                }
+#define MAX 1000000000
+
+vector<int> build_prime_factors (int m) {
+    vector<int> out;
+    int n = sqrt(m) + 1;
+    out.push_back(2);
+
+    for (int i = 3; i <= n; i+=2) {
+        bool isprime = true;
+        int cap = sqrt(i) + 1;
+
+        vector<int>::iterator p;
+        for (p = out.begin(); p != out.end(); p++) {
+            if (*p >= cap) break;
+            if (i % *p == 0) {
+                isprime = false;
+                break;
             }
         }
+        if (isprime) out.push_back(i);
     }
-    for(int i = p; i <= q; i++)
-    {
-        if(if_prime_i(i))
-        {
-            cout << i << endl;
-        }
-    }
+    return out;
 }
+
 int main()
 {
+    vector<int> pf = build_prime_factors(MAX);
     int n,p,q;
     cin >> n;
     while (n > 0) {
         cin >> p >> q;
-        LOWER = p;
-        build_primes(p,q);
+        if (p == 1)
+            p = 2;
+        for (int i = p; i <= q; i++)
+        {
+           bool prime = true;
+           for (int j = 0; j < pf.size(); j++) {
+                if (i%pf[j] == 0 && i != pf[j]) {
+                    prime = false;
+                    break;
+                }
+                if (pf[j] > sqrt(i)) {
+                    break;
+                }
+           } 
+           if (prime) {
+            cout << i << endl;
+           }
+        } 
         cout <<endl;
         n--;
     }
